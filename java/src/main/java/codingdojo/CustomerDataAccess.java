@@ -58,12 +58,12 @@ public class CustomerDataAccess {
         return personCustomer;
     }
 
-    public Customer updateCustomerRecord(Customer customer) {
-        return customerDataLayer.updateCustomerRecord(customer);
+    public void updateCustomerRecord(Customer customer) {
+        customerDataLayer.updateCustomerRecord(customer);
     }
 
-    public Customer createCustomerRecord(Customer customer) {
-        return customerDataLayer.createCustomerRecord(customer);
+    public void createCustomerRecord(Customer customer) {
+        customerDataLayer.createCustomerRecord(customer);
     }
 
     private void updateShoppingList(Customer customer, ShoppingList consumerShoppingList) {

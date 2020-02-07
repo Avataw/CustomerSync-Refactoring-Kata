@@ -45,11 +45,7 @@ public class CustomerSync {
 
         for (Customer duplicate : customerMatches.getDuplicates()) {
             duplicate.setName(externalCustomer.getName()); // in prepare
-            if (duplicate.getInternalId() == null) {
-                createCustomer(duplicate); //in create
-            } else {
-                updateCustomer(duplicate); // in update
-            }
+            updateCustomer(duplicate); // in update
         }
 
         prepare(externalCustomer, customer);
@@ -62,7 +58,7 @@ public class CustomerSync {
         Customer customer = new Customer();
         customer.setExternalId(externalCustomer.getExternalId());
         customer.setMasterExternalId(externalCustomer.getExternalId());
-        customer = createCustomer(customer);
+        createCustomer(customer);
         return customer;
     }
 
@@ -89,8 +85,8 @@ public class CustomerSync {
         this.customerDataAccess.updateCustomerRecord(customer);
     }
 
-    private Customer createCustomer(Customer customer) {
-        return this.customerDataAccess.createCustomerRecord(customer);
+    private void createCustomer(Customer customer) {
+        this.customerDataAccess.createCustomerRecord(customer);
     }
 
     public CustomerMatches loadCompany(ExternalCustomer externalCustomer) {
