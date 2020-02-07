@@ -27,7 +27,10 @@ public class CustomerSync {
             created = true;
         }
         prepare(externalCustomer, customer);
-        update(customer);
+
+
+        updateRelations(customer);
+        updateCustomer(customer);
         return created;
     }
 
@@ -49,7 +52,11 @@ public class CustomerSync {
         }
 
         prepare(externalCustomer, customer);
-        update(customer);
+
+
+
+        updateRelations(customer);
+        updateCustomer(customer);
 
         return created;
     }
@@ -70,11 +77,6 @@ public class CustomerSync {
         for (ShoppingList consumerShoppingList : externalCustomer.getShoppingLists()) {
             customer.addShoppingList(consumerShoppingList);
         }
-    }
-
-    private void update(Customer customer) {
-        updateRelations(customer);
-        updateCustomer(customer);
     }
 
     private void updateRelations(Customer customer) {
