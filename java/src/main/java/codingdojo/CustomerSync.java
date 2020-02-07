@@ -2,8 +2,6 @@ package codingdojo;
 
 import codingdojo.model.*;
 
-import java.util.List;
-
 public class CustomerSync {
 
     private final CustomerDataAccess customerDataAccess;
@@ -29,7 +27,7 @@ public class CustomerSync {
             created = true;
         }
         prepare(externalCustomer, customer);
-        update(externalCustomer, customer);
+        update(customer);
         return created;
     }
 
@@ -55,7 +53,7 @@ public class CustomerSync {
         }
 
         prepare(externalCustomer, customer);
-        update(externalCustomer, customer);
+        update(customer);
 
         return created;
     }
@@ -72,18 +70,19 @@ public class CustomerSync {
         customer.setName(externalCustomer.getName());
         customer.setPreferredStore(externalCustomer.getPreferredStore());
         customer.setAddress(externalCustomer.getPostalAddress());
+
+        for (ShoppingList consumerShoppingList : externalCustomer.getShoppingLists()) {
+            customer.addShoppingList(consumerShoppingList);
+        }
     }
 
-    private void update(ExternalCustomer externalCustomer, Customer customer) {
-        updateRelations(externalCustomer, customer);
+    private void update(Customer customer) {
+        updateRelations(customer);
         updateCustomer(customer);
     }
 
-    private void updateRelations(ExternalCustomer externalCustomer, Customer customer) {
-        List<ShoppingList> consumerShoppingLists = externalCustomer.getShoppingLists();
-        for (ShoppingList consumerShoppingList : consumerShoppingLists) {
-            this.customerDataAccess.updateShoppingList(customer, consumerShoppingList);
-        }
+    private void updateRelations(Customer customer) {
+        this.customerDataAccess.updateShoppingLists(customer);
     }
 
     private void updateCustomer(Customer customer) {
