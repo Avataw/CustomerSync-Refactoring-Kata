@@ -52,7 +52,7 @@ public class Customer {
     }
 
     public CustomerType getCustomerType() {
-        return customerType;
+        return companyNumber == null ? CustomerType.PERSON : CustomerType.COMPANY;
     }
 
     public List<ShoppingList> getShoppingLists() {
@@ -77,10 +77,6 @@ public class Customer {
 
     public String getExternalId() {
         return externalId;
-    }
-
-    public void setCustomerType(CustomerType customerType) {
-        this.customerType = customerType;
     }
 
     public void setInternalId(String internalId) {

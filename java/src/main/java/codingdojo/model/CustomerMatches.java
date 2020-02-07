@@ -13,10 +13,6 @@ public class CustomerMatches {
         return customer;
     }
 
-    public boolean hasDuplicates() {
-        return !duplicates.isEmpty();
-    }
-
     public void addDuplicate(Customer duplicate) {
         duplicates.add(duplicate);
     }

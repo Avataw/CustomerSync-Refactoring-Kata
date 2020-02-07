@@ -45,7 +45,6 @@ public class CustomerSyncTest {
         externalCustomer.setExternalId(externalId);
 
         Customer customer = new Customer();
-        customer.setCustomerType(CustomerType.PERSON);
         customer.setInternalId("67576");
         customer.setExternalId(externalId);
 
@@ -134,7 +133,6 @@ public class CustomerSyncTest {
         externalCustomer.setExternalId(externalId);
 
         Customer customer = new Customer();
-        customer.setCustomerType(CustomerType.PERSON);
         customer.setInternalId("45435");
         customer.setExternalId(externalId);
 
@@ -236,7 +234,6 @@ public class CustomerSyncTest {
         externalCustomer.setExternalId(externalId);
 
         Customer customer = new Customer();
-        customer.setCustomerType(CustomerType.COMPANY);
         customer.setCompanyNumber("32423-342");
         customer.setInternalId("45435");
         customer.setExternalId(externalId);
@@ -267,7 +264,6 @@ public class CustomerSyncTest {
 
         Customer customer2 = new Customer();
         customer2.setCompanyNumber(externalCustomer.getCompanyNumber());
-        customer2.setCustomerType(CustomerType.COMPANY);
         customer2.setInternalId("45435234");
         customer2.setMasterExternalId(externalId);
         customer2.setName("company 2");
@@ -312,7 +308,6 @@ public class CustomerSyncTest {
     private Customer createCustomerWithSameCompanyAs(ExternalCustomer externalCustomer) {
         Customer customer = new Customer();
         customer.setCompanyNumber(externalCustomer.getCompanyNumber());
-        customer.setCustomerType(CustomerType.COMPANY);
         customer.setInternalId("45435");
         return customer;
     }

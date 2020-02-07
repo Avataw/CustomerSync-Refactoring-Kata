@@ -16,8 +16,9 @@ public class CustomerDataAccess {
     public CustomerMatches loadCompanyCustomer(String externalId, String companyNumber) {
         CustomerMatches matches = new CustomerMatches();
         Customer matchByExternalId = this.customerDataLayer.findByExternalId(externalId);
+
         if (matchByExternalId != null) {
-            if (!CustomerType.COMPANY.equals(matchByExternalId.getCustomerType())) {
+            if (matchByExternalId.getCompanyNumber() == null) {
                 throw new ConflictException("Existing customer for externalCustomer " + externalId + " already exists and is not a company");
             }
 
@@ -48,16 +49,13 @@ public class CustomerDataAccess {
         return matches;
     }
 
-    public CustomerMatches loadPersonCustomer(String externalId) {
-        CustomerMatches matches = new CustomerMatches();
-        Customer matchByPersonalNumber = this.customerDataLayer.findByExternalId(externalId);
+    public Customer loadPersonCustomer(String externalId) {
+        Customer personCustomer = this.customerDataLayer.findByExternalId(externalId);
 
-        if (matchByPersonalNumber != null && !CustomerType.PERSON.equals(matchByPersonalNumber.getCustomerType())){
+        if (personCustomer != null && personCustomer.getCompanyNumber() != null){
             throw new ConflictException("Existing customer for externalCustomer " + externalId + " already exists and is not a person");
         }
-
-        matches.setCustomer(matchByPersonalNumber);
-        return matches;
+        return personCustomer;
     }
 
     public Customer updateCustomerRecord(Customer customer) {
