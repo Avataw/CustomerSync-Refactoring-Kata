@@ -2,6 +2,7 @@ package codingdojo;
 
 import codingdojo.model.Customer;
 import codingdojo.model.CustomerMatches;
+import codingdojo.model.CustomerType;
 import codingdojo.model.ShoppingList;
 
 public class CustomerDataAccess {
@@ -34,6 +35,11 @@ public class CustomerDataAccess {
     public CustomerMatches loadPersonCustomer(String externalId) {
         CustomerMatches matches = new CustomerMatches();
         Customer matchByPersonalNumber = this.customerDataLayer.findByExternalId(externalId);
+        if (matchByPersonalNumber != null) {
+            if (!CustomerType.PERSON.equals(matchByPersonalNumber.getCustomerType())) {
+                throw new ConflictException("Existing customer for externalCustomer " + externalId + " already exists and is not a person");
+            }
+        }
         matches.setCustomer(matchByPersonalNumber);
         if (matchByPersonalNumber != null) matches.setMatchTerm("ExternalId");
         return matches;
