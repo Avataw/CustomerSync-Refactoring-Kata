@@ -17,49 +17,44 @@ public class CustomerSync {
     public boolean syncWithDataLayer(ExternalCustomer externalCustomer) {
 
         if (externalCustomer.isCompany()) {
-            return syncCompanyCustomerWithDataLayer(externalCustomer);
+            return syncCompany(externalCustomer);
         } else {
-            return syncPersonCustomerWithDataLayer(externalCustomer);
+            return syncPerson(externalCustomer);
         }
     }
 
-    public boolean syncPersonCustomerWithDataLayer(ExternalCustomer externalCustomer) {
-        //prüfe ob es einen match überhaupt gibt
+    public boolean syncPerson(ExternalCustomer externalCustomer) {
         CustomerMatches customerMatches = loadPerson(externalCustomer);
         Customer customer = customerMatches.getCustomer();
-        // falls keiner gefunden wurde, erzeuge einen neuen
 
         boolean created = false;
         if (customer == null) {
-            customer = new Customer();
-            customer.setExternalId(externalCustomer.getExternalId());
-            customer.setMasterExternalId(externalCustomer.getExternalId());
-            customer = createCustomer(customer);
+            customer = create(externalCustomer);
             created = true;
         } else {
             updateCustomer(customer);
         }
 
-
-        //update das zeusch in der db
-        populateFields(externalCustomer, customer);
-        updateContactInfo(externalCustomer, customer);
-        updateRelations(externalCustomer, customer);
-        updatePreferredStore(externalCustomer, customer);
+        update(externalCustomer, customer);
         return created;
     }
 
-    public boolean syncCompanyCustomerWithDataLayer(ExternalCustomer externalCustomer) {
+    private Customer create(ExternalCustomer externalCustomer) {
+        Customer customer = new Customer();
+        customer.setExternalId(externalCustomer.getExternalId());
+        customer.setMasterExternalId(externalCustomer.getExternalId());
+        customer = createCustomer(customer);
+        return customer;
+    }
+
+    public boolean syncCompany(ExternalCustomer externalCustomer) {
         CustomerMatches customerMatches = loadCompany(externalCustomer);
         Customer customer = customerMatches.getCustomer();
 
         boolean created = false;
 
         if (customer == null) {
-            customer = new Customer();
-            customer.setExternalId(externalCustomer.getExternalId());
-            customer.setMasterExternalId(externalCustomer.getExternalId());
-            customer = createCustomer(customer);
+            customer = create(externalCustomer);
             created = true;
         } else {
             updateCustomer(customer);
@@ -72,11 +67,15 @@ public class CustomerSync {
             }
         }
 
+        update(externalCustomer, customer);
+        return created;
+    }
+
+    private void update(ExternalCustomer externalCustomer, Customer customer) {
         populateFields(externalCustomer, customer);
         updateContactInfo(externalCustomer, customer);
         updateRelations(externalCustomer, customer);
         updatePreferredStore(externalCustomer, customer);
-        return created;
     }
 
     private void updateRelations(ExternalCustomer externalCustomer, Customer customer) {
