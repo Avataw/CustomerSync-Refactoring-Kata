@@ -17,6 +17,10 @@ public class CustomerDataAccess {
         CustomerMatches matches = new CustomerMatches();
         Customer matchByExternalId = this.customerDataLayer.findByExternalId(externalId);
         if (matchByExternalId != null) {
+            if (!CustomerType.COMPANY.equals(matchByExternalId.getCustomerType())) {
+                throw new ConflictException("Existing customer for externalCustomer " + externalId + " already exists and is not a company");
+            }
+
             matches.setCustomer(matchByExternalId);
             matches.setMatchTerm("ExternalId");
             Customer matchByMasterId = this.customerDataLayer.findByMasterExternalId(externalId);
@@ -24,8 +28,14 @@ public class CustomerDataAccess {
         } else {
             Customer matchByCompanyNumber = this.customerDataLayer.findByCompanyNumber(companyNumber);
             if (matchByCompanyNumber != null) {
+
                 matches.setCustomer(matchByCompanyNumber);
-                matches.setMatchTerm("CompanyNumber");
+                String customerExternalId = matchByCompanyNumber.getExternalId();
+                if (customerExternalId != null && !externalId.equals(customerExternalId)) {
+                    throw new ConflictException("Existing customer for externalCustomer " + companyNumber + " doesn't match external id " + externalId + " instead found " + customerExternalId);
+                }
+                matchByCompanyNumber.setExternalId(externalId);
+                matchByCompanyNumber.setMasterExternalId(externalId);
             }
         }
 
@@ -35,13 +45,12 @@ public class CustomerDataAccess {
     public CustomerMatches loadPersonCustomer(String externalId) {
         CustomerMatches matches = new CustomerMatches();
         Customer matchByPersonalNumber = this.customerDataLayer.findByExternalId(externalId);
-        if (matchByPersonalNumber != null) {
-            if (!CustomerType.PERSON.equals(matchByPersonalNumber.getCustomerType())) {
-                throw new ConflictException("Existing customer for externalCustomer " + externalId + " already exists and is not a person");
-            }
+
+        if (matchByPersonalNumber != null && !CustomerType.PERSON.equals(matchByPersonalNumber.getCustomerType())){
+            throw new ConflictException("Existing customer for externalCustomer " + externalId + " already exists and is not a person");
         }
+
         matches.setCustomer(matchByPersonalNumber);
-        if (matchByPersonalNumber != null) matches.setMatchTerm("ExternalId");
         return matches;
     }
 
