@@ -21,8 +21,14 @@ public class CustomerDataAccess {
                 throw new ConflictException("Existing customer for externalCustomer " + externalId + " already exists and is not a company");
             }
 
-            matches.setCustomer(matchByExternalId);
-            matches.setMatchTerm("ExternalId");
+            if (!companyNumber.equals(matchByExternalId.getCompanyNumber())) {
+                matchByExternalId.setMasterExternalId(null);
+                matches.addDuplicate(matchByExternalId);
+                matches.setCustomer(null);
+            } else {
+                matches.setCustomer(matchByExternalId);
+            }
+
             Customer matchByMasterId = this.customerDataLayer.findByMasterExternalId(externalId);
             if (matchByMasterId != null) matches.addDuplicate(matchByMasterId);
         } else {

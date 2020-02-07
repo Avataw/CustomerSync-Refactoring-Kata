@@ -95,14 +95,7 @@ public class CustomerSync {
     }
 
     private void updateDuplicate(ExternalCustomer externalCustomer, Customer duplicate) {
-        if (duplicate == null) {
-            duplicate = new Customer();
-            duplicate.setExternalId(externalCustomer.getExternalId());
-            duplicate.setMasterExternalId(externalCustomer.getExternalId());
-        }
-
         duplicate.setName(externalCustomer.getName());
-
         if (duplicate.getInternalId() == null) {
             createCustomer(duplicate);
         } else {
@@ -115,27 +108,10 @@ public class CustomerSync {
     }
 
     public CustomerMatches loadCompany(ExternalCustomer externalCustomer) {
-
-        final String externalId = externalCustomer.getExternalId();
-        final String companyNumber = externalCustomer.getCompanyNumber();
-
-        CustomerMatches customerMatches = customerDataAccess.loadCompanyCustomer(externalId, companyNumber);
-
-        if ("ExternalId".equals(customerMatches.getMatchTerm())) {
-            String customerCompanyNumber = customerMatches.getCustomer().getCompanyNumber();
-            if (!companyNumber.equals(customerCompanyNumber)) {
-                customerMatches.getCustomer().setMasterExternalId(null);
-                customerMatches.addDuplicate(customerMatches.getCustomer());
-                customerMatches.setCustomer(null);
-                customerMatches.setMatchTerm(null);
-            }
-        } 
-
-        return customerMatches;
+        return customerDataAccess.loadCompanyCustomer(externalCustomer.getExternalId(), externalCustomer.getCompanyNumber());
     }
 
     public CustomerMatches loadPerson(ExternalCustomer externalCustomer) {
         return customerDataAccess.loadPersonCustomer(externalCustomer.getExternalId());
-
     }
 }

@@ -7,7 +7,6 @@ import java.util.Collection;
 
 public class CustomerMatches {
     private Collection<Customer> duplicates = new ArrayList<>();
-    private String matchTerm;
     private Customer customer;
 
     public Customer getCustomer() {
@@ -24,14 +23,6 @@ public class CustomerMatches {
 
     public Collection<Customer> getDuplicates() {
         return duplicates;
-    }
-
-    public String getMatchTerm() {
-        return matchTerm;
-    }
-
-    public void setMatchTerm(String matchTerm) {
-        this.matchTerm = matchTerm;
     }
 
     public void setCustomer(Customer customer) {
