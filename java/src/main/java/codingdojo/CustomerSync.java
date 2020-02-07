@@ -1,5 +1,7 @@
 package codingdojo;
 
+import codingdojo.model.*;
+
 import java.util.List;
 
 public class CustomerSync {
@@ -15,12 +17,7 @@ public class CustomerSync {
     }
 
     public boolean syncWithDataLayer(ExternalCustomer externalCustomer) {
-
-        if (externalCustomer.isCompany()) {
-            return syncCompany(externalCustomer);
-        } else {
-            return syncPerson(externalCustomer);
-        }
+        return externalCustomer.isCompany() ? syncCompany(externalCustomer) : syncPerson(externalCustomer);
     }
 
     public boolean syncPerson(ExternalCustomer externalCustomer) {
@@ -31,20 +28,12 @@ public class CustomerSync {
         if (customer == null) {
             customer = create(externalCustomer);
             created = true;
-        } else {
-            updateCustomer(customer);
         }
+
+        prepare(externalCustomer, customer);
 
         update(externalCustomer, customer);
         return created;
-    }
-
-    private Customer create(ExternalCustomer externalCustomer) {
-        Customer customer = new Customer();
-        customer.setExternalId(externalCustomer.getExternalId());
-        customer.setMasterExternalId(externalCustomer.getExternalId());
-        customer = createCustomer(customer);
-        return customer;
     }
 
     public boolean syncCompany(ExternalCustomer externalCustomer) {
@@ -56,26 +45,42 @@ public class CustomerSync {
         if (customer == null) {
             customer = create(externalCustomer);
             created = true;
-        } else {
-            updateCustomer(customer);
         }
 
-        //falls es übrigens mehr gibt, mach noch zeusch
         if (customerMatches.hasDuplicates()) {
             for (Customer duplicate : customerMatches.getDuplicates()) {
                 updateDuplicate(externalCustomer, duplicate);
             }
         }
-
+        prepare(externalCustomer, customer);
         update(externalCustomer, customer);
+
         return created;
     }
 
+    private Customer create(ExternalCustomer externalCustomer) {
+        Customer customer = new Customer();
+        customer.setExternalId(externalCustomer.getExternalId());
+        customer.setMasterExternalId(externalCustomer.getExternalId());
+        customer = createCustomer(customer);
+        return customer;
+    }
+
+    private void prepare(ExternalCustomer externalCustomer, Customer customer) {
+        customer.setName(externalCustomer.getName());
+        customer.setPreferredStore(externalCustomer.getPreferredStore());
+        customer.setAddress(externalCustomer.getPostalAddress());
+        if (externalCustomer.isCompany()) {
+            customer.setCompanyNumber(externalCustomer.getCompanyNumber());
+            customer.setCustomerType(CustomerType.COMPANY);
+        } else {
+            customer.setCustomerType(CustomerType.PERSON);
+        }
+    }
+
     private void update(ExternalCustomer externalCustomer, Customer customer) {
-        populateFields(externalCustomer, customer);
-        updateContactInfo(externalCustomer, customer);
         updateRelations(externalCustomer, customer);
-        updatePreferredStore(externalCustomer, customer);
+        updateCustomer(customer);
     }
 
     private void updateRelations(ExternalCustomer externalCustomer, Customer customer) {
@@ -105,26 +110,8 @@ public class CustomerSync {
         }
     }
 
-    private void updatePreferredStore(ExternalCustomer externalCustomer, Customer customer) {
-        customer.setPreferredStore(externalCustomer.getPreferredStore());
-    }
-
     private Customer createCustomer(Customer customer) {
         return this.customerDataAccess.createCustomerRecord(customer);
-    }
-
-    private void populateFields(ExternalCustomer externalCustomer, Customer customer) {
-        customer.setName(externalCustomer.getName());
-        if (externalCustomer.isCompany()) {
-            customer.setCompanyNumber(externalCustomer.getCompanyNumber());
-            customer.setCustomerType(CustomerType.COMPANY);
-        } else {
-            customer.setCustomerType(CustomerType.PERSON);
-        }
-    }
-
-    private void updateContactInfo(ExternalCustomer externalCustomer, Customer customer) {
-        customer.setAddress(externalCustomer.getPostalAddress());
     }
 
     public CustomerMatches loadCompany(ExternalCustomer externalCustomer) {

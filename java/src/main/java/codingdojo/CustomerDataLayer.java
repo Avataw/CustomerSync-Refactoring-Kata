@@ -1,5 +1,8 @@
 package codingdojo;
 
+import codingdojo.model.Customer;
+import codingdojo.model.ShoppingList;
+
 public interface CustomerDataLayer {
 
     Customer updateCustomerRecord(Customer customer);

@@ -1,5 +1,6 @@
 package codingdojo;
 
+import codingdojo.model.*;
 import org.approvaltests.Approvals;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

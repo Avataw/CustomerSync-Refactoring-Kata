@@ -1,5 +1,9 @@
 package codingdojo;
 
+import codingdojo.model.Customer;
+import codingdojo.model.CustomerMatches;
+import codingdojo.model.ShoppingList;
+
 public class CustomerDataAccess {
 
     private final CustomerDataLayer customerDataLayer;

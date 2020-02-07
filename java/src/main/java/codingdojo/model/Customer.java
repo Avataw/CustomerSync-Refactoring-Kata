@@ -1,4 +1,4 @@
-package codingdojo;
+package codingdojo.model;
 
 import java.util.ArrayList;
 import java.util.List;
