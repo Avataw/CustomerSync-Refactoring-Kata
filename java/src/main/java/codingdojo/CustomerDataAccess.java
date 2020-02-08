@@ -14,7 +14,7 @@ public class CustomerDataAccess {
         this.customerDataLayer = customerDataLayer;
     }
 
-    public Optional<Customer> loadCompanyCustomer(String externalId, String companyNumber) {
+    public Optional<Company> loadCompanyCustomer(String externalId, String companyNumber) {
 
         Customer customer = this.customerDataLayer.findByExternalId(externalId);
         if (customer != null) {

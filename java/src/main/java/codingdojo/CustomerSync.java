@@ -25,44 +25,42 @@ public class CustomerSync {
 
     public boolean syncPerson(Person externalPerson) {
         Optional<Person> loadCustomer = loadPerson(externalPerson);
-        Person customer = loadCustomer.isEmpty()
+        Person person = loadCustomer.isEmpty()
                 ? create((Customer) externalPerson)
                 : loadCustomer.get();
 
-        customer.setName(externalPerson.getName());
-        customer.setPreferredStore(externalPerson.getPreferredStore());
-        customer.setAddress(externalPerson.getAddress());
+        person.setName(externalPerson.getName());
+        person.setPreferredStore(externalPerson.getPreferredStore());
+        person.setAddress(externalPerson.getAddress());
 
         for (ShoppingList consumerShoppingList : externalPerson.getShoppingLists()) {
-            customer.addShoppingList(consumerShoppingList);
+            person.addShoppingList(consumerShoppingList);
         }
 
-        updateCustomer((Customer) customer);
+        updateCustomer((Customer) person);
         return loadCustomer.isEmpty();
     }
 
-    public boolean syncCompany(Customer externalCustomer) {
-        List<Duplicate> duplicates = customerDataAccess.checkForDuplicates(externalCustomer.getExternalId(), externalCustomer.getCompanyNumber());
-        updateDuplicates(duplicates, externalCustomer.getName());
+    public boolean syncCompany(Company externalCompany) {
+        List<Duplicate> duplicates = customerDataAccess.checkForDuplicates(externalCompany.getExternalId(), externalCompany.getCompanyNumber());
+        updateDuplicates(duplicates, externalCompany.getName());
 
-        Optional<Customer> loadCustomer = loadCompany(externalCustomer);
-        Customer customer = getOrCreate(externalCustomer, loadCustomer);
-
-        customer.setCompanyNumber(externalCustomer.getCompanyNumber());
-
-        updateCustomer(customer);
-        return loadCustomer.isEmpty();
-    }
-
-    private Customer getOrCreate(Customer externalCustomer, Optional<Customer> loadCustomer) {
-        Customer customer;
-
-        customer = loadCustomer.isEmpty()
-                ? create(externalCustomer)
+        Optional<Company> loadCustomer = loadCompany(externalCompany);
+        Company company = loadCustomer.isEmpty()
+                ? create((Customer) externalCompany)
                 : loadCustomer.get();
 
-        prepare(externalCustomer, customer);
-        return customer;
+        company.setName(externalCompany.getName());
+        company.setPreferredStore(externalCompany.getPreferredStore());
+        company.setAddress(externalCompany.getAddress());
+
+        for (ShoppingList consumerShoppingList : externalCompany.getShoppingLists()) {
+            company.addShoppingList(consumerShoppingList);
+        }
+        company.setCompanyNumber(externalCompany.getCompanyNumber());
+
+        updateCustomer((Customer) company);
+        return loadCustomer.isEmpty();
     }
 
     private void updateDuplicates(List<Duplicate> duplicates, String name) {
@@ -99,11 +97,11 @@ public class CustomerSync {
         this.customerDataAccess.createCustomerRecord(customer);
     }
 
-    public Optional<Customer> loadCompany(Customer externalCustomer) {
+    public Optional<Company> loadCompany(Company externalCustomer) {
         return customerDataAccess.loadCompanyCustomer(externalCustomer.getExternalId(), externalCustomer.getCompanyNumber());
     }
 
-    public Optional<Person> loadPerson(Person externalCustomer) {
-        return customerDataAccess.loadPersonCustomer(externalCustomer.getExternalId());
+    public Optional<Person> loadPerson(Person externalPerson) {
+        return customerDataAccess.loadPersonCustomer(externalPerson.getExternalId());
     }
 }
