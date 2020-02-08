@@ -17,7 +17,7 @@ public class CustomerSync {
     }
 
     public boolean syncWithDataLayer(ExternalCustomer externalCustomer) {
-        return externalCustomer.isCompany() ? syncCompany(externalCustomer) : syncPerson(externalCustomer);
+        return externalCustomer.getCustomerType() == CustomerType.COMPANY ? syncCompany(externalCustomer) : syncPerson(externalCustomer);
     }
 
     public boolean syncPerson(ExternalCustomer externalCustomer) {
@@ -73,7 +73,7 @@ public class CustomerSync {
     private void prepare(ExternalCustomer externalCustomer, Customer customer) {
         customer.setName(externalCustomer.getName());
         customer.setPreferredStore(externalCustomer.getPreferredStore());
-        customer.setAddress(externalCustomer.getPostalAddress());
+        customer.setAddress(externalCustomer.getAddress());
 
         for (ShoppingList consumerShoppingList : externalCustomer.getShoppingLists()) {
             customer.addShoppingList(consumerShoppingList);

@@ -9,7 +9,7 @@ public class Customer {
     private String masterExternalId;
     private Address address;
     private String preferredStore;
-    private ArrayList<ShoppingList> shoppingLists = new ArrayList<>();
+    private List<ShoppingList> shoppingLists = new ArrayList<>();
     private String internalId;
     private String name;
     private String companyNumber;
@@ -58,7 +58,7 @@ public class Customer {
         return shoppingLists;
     }
 
-    public void setShoppingLists(ArrayList<ShoppingList> shoppingLists) {
+    public void setShoppingLists(List<ShoppingList> shoppingLists) {
         this.shoppingLists = shoppingLists;
     }
 
