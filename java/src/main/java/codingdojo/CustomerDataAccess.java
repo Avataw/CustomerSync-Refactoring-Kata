@@ -14,19 +14,7 @@ public class CustomerDataAccess {
         this.customerDataLayer = customerDataLayer;
     }
 
-    public Optional<Customer> loadCompanyById(String externalId) {
-        return Optional.ofNullable(this.customerDataLayer.findByExternalId(externalId));
-    }
-
-    public Optional<Customer> loadCompanyByNumber(String companyNumber) {
-        return Optional.ofNullable(this.customerDataLayer.findByCompanyNumber(companyNumber));
-    }
-
-    public List<Customer> loadDuplicates(String externalId, String companyNumber) {
-        return null;
-    }
-
-    public Customer loadCompanyCustomer(String externalId, String companyNumber) {
+    public Optional<Customer> loadCompanyCustomer(String externalId, String companyNumber) {
 
         Customer customer = this.customerDataLayer.findByExternalId(externalId);
         if (customer != null) {
@@ -37,7 +25,7 @@ public class CustomerDataAccess {
             customer = byCompanyNumber(externalId, companyNumber, customer);
         }
 
-        return customer;
+        return Optional.ofNullable(customer);
     }
 
     public List<Customer> checkForDuplicates(String externalId, String companyNumber) {
