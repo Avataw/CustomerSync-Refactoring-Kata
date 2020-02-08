@@ -62,7 +62,7 @@ public class CustomerDataAccess {
     }
 
 
-    public Optional<Customer> loadPersonCustomer(String externalId) {
+    public Optional<Person> loadPersonCustomer(String externalId) {
         Customer personCustomer = this.customerDataLayer.findByExternalId(externalId);
         if (personCustomer != null && personCustomer.getCustomerType() == CustomerType.COMPANY)
             throw new ConflictException("Existing customer for externalCustomer " + externalId + " already exists and is not a person");

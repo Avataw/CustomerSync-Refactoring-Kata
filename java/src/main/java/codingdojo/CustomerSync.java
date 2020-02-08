@@ -23,11 +23,21 @@ public class CustomerSync {
                 : syncPerson(externalCustomer);
     }
 
-    public boolean syncPerson(Customer externalCustomer) {
-        Optional<Customer> loadCustomer = loadPerson(externalCustomer);
-        Customer customer = getOrCreate(externalCustomer, loadCustomer);
+    public boolean syncPerson(Person externalPerson) {
+        Optional<Person> loadCustomer = loadPerson(externalPerson);
+        Person customer = loadCustomer.isEmpty()
+                ? create((Customer) externalPerson)
+                : loadCustomer.get();
 
-        updateCustomer(customer);
+        customer.setName(externalPerson.getName());
+        customer.setPreferredStore(externalPerson.getPreferredStore());
+        customer.setAddress(externalPerson.getAddress());
+
+        for (ShoppingList consumerShoppingList : externalPerson.getShoppingLists()) {
+            customer.addShoppingList(consumerShoppingList);
+        }
+
+        updateCustomer((Customer) customer);
         return loadCustomer.isEmpty();
     }
 
@@ -93,7 +103,7 @@ public class CustomerSync {
         return customerDataAccess.loadCompanyCustomer(externalCustomer.getExternalId(), externalCustomer.getCompanyNumber());
     }
 
-    public Optional<Customer> loadPerson(Customer externalCustomer) {
+    public Optional<Person> loadPerson(Person externalCustomer) {
         return customerDataAccess.loadPersonCustomer(externalCustomer.getExternalId());
     }
 }

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Customer implements Duplicate {
+public class Customer implements Duplicate, Person {
     private String externalId;
     private String masterExternalId;
     private Address address;
