@@ -23,19 +23,14 @@ public class CustomerSync {
     public boolean syncPerson(ExternalCustomer externalCustomer) {
         //load one customer
         Optional<Customer> loadCustomer = loadPerson(externalCustomer);
+        Customer customer;
 
-        if (!loadCustomer.isPresent()) {
-            Customer customer = create(externalCustomer);
-            prepare(externalCustomer, customer);
-            updateRelations(customer);
-            updateCustomer(customer);
-        } else {
-            prepare(externalCustomer, loadCustomer.get());
-            updateRelations(loadCustomer.get());
-            updateCustomer(loadCustomer.get());
-        }
-
-        return !loadCustomer.isPresent();
+        customer = loadCustomer.isEmpty() ? create(externalCustomer) : loadCustomer.get();
+        
+        prepare(externalCustomer, customer);
+        updateRelations(customer);
+        updateCustomer(customer);
+        return loadCustomer.isEmpty();
     }
 
     public boolean syncCompany(ExternalCustomer externalCustomer) {
