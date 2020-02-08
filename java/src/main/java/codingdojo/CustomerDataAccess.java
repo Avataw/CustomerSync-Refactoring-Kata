@@ -31,32 +31,34 @@ public class CustomerDataAccess {
 
         Customer customer = this.customerDataLayer.findByExternalId(externalId);
         if (customer != null) {
-            matches.setCustomer(byExternalId(externalId, companyNumber, matches, customer));
+            matches.setCustomer(byExternalId(externalId, companyNumber, customer));
 
         } else {
             customer = this.customerDataLayer.findByCompanyNumber(companyNumber);
-            matches.setCustomer(byCompanyNumber(externalId, companyNumber, matches, customer));
+            matches.setCustomer(byCompanyNumber(externalId, companyNumber, customer));
         }
 
         return matches;
     }
 
-    public void checkForDuplicate(String externalId, String companyNumber, Customer customer, CustomerMatches matches) {
+    public List<Customer> checkForDuplicates(String externalId, String companyNumber) {
+        List<Customer> duplicates = new ArrayList<>();
 
         Customer matchByMasterId = this.customerDataLayer.findByMasterExternalId(externalId);
         Customer matchById = this.customerDataLayer.findByExternalId(externalId);
-        if (matchByMasterId != null) matches.addDuplicate(matchByMasterId);
+        if (matchByMasterId != null) duplicates.add(matchByMasterId);
 
         if (matchById != null) {
             if (matchById.getCompanyNumber() != null) {
                 if (!matchById.getCompanyNumber().equals(companyNumber)) {
-                    matches.addDuplicate(matchById);
+                    duplicates.add(matchById);
                 }
             }
         }
+        return duplicates;
     }
 
-    private Customer byExternalId(String externalId, String companyNumber, CustomerMatches matches, Customer customer) {
+    private Customer byExternalId(String externalId, String companyNumber, Customer customer) {
         if (customer.getCustomerType() == CustomerType.PERSON)
             throw new ConflictException("Existing customer for externalCustomer " + externalId + " already exists and is not a company");
         if(!companyNumber.equals(customer.getCompanyNumber())) return null;
@@ -64,7 +66,7 @@ public class CustomerDataAccess {
         return customer;
     }
 
-    private Customer byCompanyNumber(String externalId, String companyNumber, CustomerMatches matches, Customer customer) {
+    private Customer byCompanyNumber(String externalId, String companyNumber, Customer customer) {
         if (customer == null) return null;
 
         String customerExternalId = customer.getExternalId();
