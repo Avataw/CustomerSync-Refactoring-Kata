@@ -1,10 +1,9 @@
 package codingdojo;
 
-import codingdojo.model.Customer;
-import codingdojo.model.CustomerMatches;
-import codingdojo.model.CustomerType;
-import codingdojo.model.ShoppingList;
+import codingdojo.model.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class CustomerDataAccess {
@@ -15,42 +14,58 @@ public class CustomerDataAccess {
         this.customerDataLayer = customerDataLayer;
     }
 
+    public Optional<Customer> loadCompanyById(String externalId) {
+        return Optional.ofNullable(this.customerDataLayer.findByExternalId(externalId));
+    }
+
+    public Optional<Customer> loadCompanyByNumber(String companyNumber) {
+        return Optional.ofNullable(this.customerDataLayer.findByCompanyNumber(companyNumber));
+    }
+
+    public List<Customer> loadDuplicates(String externalId, String companyNumber) {
+        return null;
+    }
+
     public CustomerMatches loadCompanyCustomer(String externalId, String companyNumber) {
         CustomerMatches matches = new CustomerMatches();
 
         Customer customer = this.customerDataLayer.findByExternalId(externalId);
+        if (customer != null) {
+            matches.setCustomer(byExternalId(externalId, companyNumber, matches, customer));
 
-        if(customer != null) {
-            byExternalId(externalId, companyNumber, matches, customer);
         } else {
             customer = this.customerDataLayer.findByCompanyNumber(companyNumber);
-            byCompanyNumber(externalId, companyNumber, matches, customer);
+            matches.setCustomer(byCompanyNumber(externalId, companyNumber, matches, customer));
         }
-
-        Customer matchByMasterId = this.customerDataLayer.findByMasterExternalId(externalId);
-        if (matchByMasterId != null) matches.addDuplicate(matchByMasterId);
 
         return matches;
-
     }
 
-    private void checkForDuplicate(String companyNumber, Customer customer, CustomerMatches matches) {
-        if (customer.getCompanyNumber().equals(companyNumber)) {
-            matches.setCustomer(customer);
-        } else {
-            matches.addDuplicate(customer);
+    public void checkForDuplicate(String externalId, String companyNumber, Customer customer, CustomerMatches matches) {
+
+        Customer matchByMasterId = this.customerDataLayer.findByMasterExternalId(externalId);
+        Customer matchById = this.customerDataLayer.findByExternalId(externalId);
+        if (matchByMasterId != null) matches.addDuplicate(matchByMasterId);
+
+        if (matchById != null) {
+            if (matchById.getCompanyNumber() != null) {
+                if (!matchById.getCompanyNumber().equals(companyNumber)) {
+                    matches.addDuplicate(matchById);
+                }
+            }
         }
     }
 
-    private void byExternalId(String externalId, String companyNumber, CustomerMatches matches, Customer customer) {
+    private Customer byExternalId(String externalId, String companyNumber, CustomerMatches matches, Customer customer) {
         if (customer.getCustomerType() == CustomerType.PERSON)
             throw new ConflictException("Existing customer for externalCustomer " + externalId + " already exists and is not a company");
-        checkForDuplicate(companyNumber, customer, matches);
+        if(!companyNumber.equals(customer.getCompanyNumber())) return null;
+
+        return customer;
     }
 
-    private void byCompanyNumber(String externalId, String companyNumber, CustomerMatches matches, Customer customer) {
-        if (customer == null) return;
-        matches.setCustomer(customer);
+    private Customer byCompanyNumber(String externalId, String companyNumber, CustomerMatches matches, Customer customer) {
+        if (customer == null) return null;
 
         String customerExternalId = customer.getExternalId();
         if (customerExternalId != null && !externalId.equals(customerExternalId)) {
@@ -58,6 +73,7 @@ public class CustomerDataAccess {
         }
         customer.setExternalId(externalId);
         customer.setMasterExternalId(externalId);
+        return customer;
     }
 
 

@@ -2,6 +2,7 @@ package codingdojo;
 
 import codingdojo.model.*;
 
+import java.util.List;
 import java.util.Optional;
 
 public class CustomerSync {
@@ -26,7 +27,7 @@ public class CustomerSync {
         Customer customer;
 
         customer = loadCustomer.isEmpty() ? create(externalCustomer) : loadCustomer.get();
-        
+
         prepare(externalCustomer, customer);
         updateRelations(customer);
         updateCustomer(customer);
@@ -36,6 +37,12 @@ public class CustomerSync {
     public boolean syncCompany(ExternalCustomer externalCustomer) {
         CustomerMatches customerMatches = loadCompany(externalCustomer);
         Customer customer = customerMatches.getCustomer();
+        CustomerMatches duplicates = new CustomerMatches();
+        customerDataAccess.checkForDuplicate(externalCustomer.getExternalId(), externalCustomer.getCompanyNumber(), customer, duplicates);
+        for (Customer duplicate : duplicates.getDuplicates()) {
+            duplicate.setName(externalCustomer.getName()); // in prepare
+            updateCustomer(duplicate); // in update
+        }
 
         boolean created = false;
 
@@ -49,10 +56,7 @@ public class CustomerSync {
         updateRelations(customer);
         updateCustomer(customer);
 
-        for (Customer duplicate : customerMatches.getDuplicates()) {
-            duplicate.setName(externalCustomer.getName()); // in prepare
-            updateCustomer(duplicate); // in update
-        }
+
 
         return created;
     }

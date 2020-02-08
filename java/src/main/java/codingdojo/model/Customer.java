@@ -14,6 +14,14 @@ public class Customer {
     private String name;
     private String companyNumber;
 
+    public Customer(){
+
+    }
+
+    public Customer(String externalId){
+        this.externalId = this.masterExternalId = externalId;
+    }
+
     public void setExternalId(String externalId) {
         this.externalId = externalId;
     }
