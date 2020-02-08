@@ -5,6 +5,8 @@ import codingdojo.model.CustomerMatches;
 import codingdojo.model.CustomerType;
 import codingdojo.model.ShoppingList;
 
+import java.util.Optional;
+
 public class CustomerDataAccess {
 
     private final CustomerDataLayer customerDataLayer;
@@ -59,12 +61,12 @@ public class CustomerDataAccess {
     }
 
 
-    public Customer loadPersonCustomer(String externalId) {
+    public Optional<Customer> loadPersonCustomer(String externalId) {
         Customer personCustomer = this.customerDataLayer.findByExternalId(externalId);
         if (personCustomer != null && personCustomer.getCustomerType() == CustomerType.COMPANY)
             throw new ConflictException("Existing customer for externalCustomer " + externalId + " already exists and is not a person");
 
-        return personCustomer;
+        return Optional.ofNullable(personCustomer);
     }
 
     public void updateCustomerRecord(Customer customer) {

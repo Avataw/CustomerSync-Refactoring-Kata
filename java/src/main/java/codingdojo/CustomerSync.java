@@ -2,6 +2,8 @@ package codingdojo;
 
 import codingdojo.model.*;
 
+import java.util.Optional;
+
 public class CustomerSync {
 
     private final CustomerDataAccess customerDataAccess;
@@ -19,19 +21,21 @@ public class CustomerSync {
     }
 
     public boolean syncPerson(ExternalCustomer externalCustomer) {
-        Customer customer = loadPerson(externalCustomer);
+        //load one customer
+        Optional<Customer> loadCustomer = loadPerson(externalCustomer);
 
-        boolean created = false;
-        if (customer == null) {
-            customer = create(externalCustomer);
-            created = true;
+        if (!loadCustomer.isPresent()) {
+            Customer customer = create(externalCustomer);
+            prepare(externalCustomer, customer);
+            updateRelations(customer);
+            updateCustomer(customer);
+        } else {
+            prepare(externalCustomer, loadCustomer.get());
+            updateRelations(loadCustomer.get());
+            updateCustomer(loadCustomer.get());
         }
-        prepare(externalCustomer, customer);
 
-
-        updateRelations(customer);
-        updateCustomer(customer);
-        return created;
+        return !loadCustomer.isPresent();
     }
 
     public boolean syncCompany(ExternalCustomer externalCustomer) {
@@ -42,21 +46,18 @@ public class CustomerSync {
 
         if (customer == null) {
             customer = create(externalCustomer);
-            customer.setCompanyNumber(externalCustomer.getCompanyNumber());
             created = true;
         }
+        customer.setCompanyNumber(externalCustomer.getCompanyNumber());
+
+        prepare(externalCustomer, customer);
+        updateRelations(customer);
+        updateCustomer(customer);
 
         for (Customer duplicate : customerMatches.getDuplicates()) {
             duplicate.setName(externalCustomer.getName()); // in prepare
             updateCustomer(duplicate); // in update
         }
-
-        prepare(externalCustomer, customer);
-
-
-
-        updateRelations(customer);
-        updateCustomer(customer);
 
         return created;
     }
@@ -95,7 +96,7 @@ public class CustomerSync {
         return customerDataAccess.loadCompanyCustomer(externalCustomer.getExternalId(), externalCustomer.getCompanyNumber());
     }
 
-    public Customer loadPerson(ExternalCustomer externalCustomer) {
+    public Optional<Customer> loadPerson(ExternalCustomer externalCustomer) {
         return customerDataAccess.loadPersonCustomer(externalCustomer.getExternalId());
     }
 }

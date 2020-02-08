@@ -5,6 +5,7 @@ import org.approvaltests.Approvals;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -71,7 +72,9 @@ public class CustomerSyncTest {
 
         Customer customer = createCustomerWithSameCompanyAs(externalCustomer);
         customer.setExternalId(externalId);
-        customer.setShoppingLists(Arrays.asList(new ShoppingList("eyeliner", "blusher")));
+        ArrayList<ShoppingList> shoppingLists = new ArrayList<>();
+        shoppingLists.add(new ShoppingList("eyeliner", "blusher"));
+        customer.setShoppingLists(shoppingLists);
 
         FakeDatabase db = new FakeDatabase();
         db.addCustomer(customer);
