@@ -32,15 +32,11 @@ public class CustomerDataAccess {
         List<Customer> duplicates = new ArrayList<>();
 
         Customer matchByMasterId = this.customerDataLayer.findByMasterExternalId(externalId);
-        Customer matchById = this.customerDataLayer.findByExternalId(externalId);
         if (matchByMasterId != null) duplicates.add(matchByMasterId);
 
-        if (matchById != null) {
-            if (matchById.getCompanyNumber() != null) {
-                if (!matchById.getCompanyNumber().equals(companyNumber)) {
+        Customer matchById = this.customerDataLayer.findByExternalId(externalId);
+        if (matchById != null && matchById.getCompanyNumber() != null && !matchById.getCompanyNumber().equals(companyNumber)) {
                     duplicates.add(matchById);
-                }
-            }
         }
         return duplicates;
     }
