@@ -32,7 +32,8 @@ public class CustomerSync {
     }
 
     public boolean syncCompany(Customer externalCustomer) {
-        handleDuplicates(externalCustomer);
+        List<Duplicate> duplicates = customerDataAccess.checkForDuplicates(externalCustomer.getExternalId(), externalCustomer.getCompanyNumber());
+        updateDuplicates(duplicates, externalCustomer.getName());
 
         Optional<Customer> loadCustomer = loadCompany(externalCustomer);
         Customer customer = getOrCreate(externalCustomer, loadCustomer);
@@ -54,11 +55,9 @@ public class CustomerSync {
         return customer;
     }
 
-    private void handleDuplicates(Customer externalCustomer) {
-        List<Customer> duplicates = customerDataAccess.checkForDuplicates(externalCustomer.getExternalId(), externalCustomer.getCompanyNumber());
-        for (Customer duplicate : duplicates) {
-            duplicate.setName(externalCustomer.getName()); // in prepare
-            updateCustomer(duplicate); // in update
+    private void updateDuplicates(List<Duplicate> duplicates, String name) {
+        for (Duplicate duplicate : duplicates) {
+            duplicate.setName(name); // in prepare
         }
     }
 

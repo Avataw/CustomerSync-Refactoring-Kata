@@ -28,15 +28,15 @@ public class CustomerDataAccess {
         return Optional.ofNullable(customer);
     }
 
-    public List<Customer> checkForDuplicates(String externalId, String companyNumber) {
-        List<Customer> duplicates = new ArrayList<>();
+    public List<Duplicate> checkForDuplicates(String externalId, String companyNumber) {
+        List<Duplicate> duplicates = new ArrayList<>();
 
         Customer matchByMasterId = this.customerDataLayer.findByMasterExternalId(externalId);
         if (matchByMasterId != null) duplicates.add(matchByMasterId);
 
-        Customer matchById = this.customerDataLayer.findByExternalId(externalId);
+        Customer matchById =  this.customerDataLayer.findByExternalId(externalId);
         if (matchById != null && matchById.getCompanyNumber() != null && !matchById.getCompanyNumber().equals(companyNumber)) {
-                    duplicates.add(matchById);
+                    duplicates.add( matchById);
         }
         return duplicates;
     }
