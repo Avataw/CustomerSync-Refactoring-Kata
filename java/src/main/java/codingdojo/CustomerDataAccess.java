@@ -26,19 +26,18 @@ public class CustomerDataAccess {
         return null;
     }
 
-    public CustomerMatches loadCompanyCustomer(String externalId, String companyNumber) {
-        CustomerMatches matches = new CustomerMatches();
+    public Customer loadCompanyCustomer(String externalId, String companyNumber) {
 
         Customer customer = this.customerDataLayer.findByExternalId(externalId);
         if (customer != null) {
-            matches.setCustomer(byExternalId(externalId, companyNumber, customer));
+            customer = byExternalId(externalId, companyNumber, customer);
 
         } else {
             customer = this.customerDataLayer.findByCompanyNumber(companyNumber);
-            matches.setCustomer(byCompanyNumber(externalId, companyNumber, customer));
+            customer = byCompanyNumber(externalId, companyNumber, customer);
         }
 
-        return matches;
+        return customer;
     }
 
     public List<Customer> checkForDuplicates(String externalId, String companyNumber) {

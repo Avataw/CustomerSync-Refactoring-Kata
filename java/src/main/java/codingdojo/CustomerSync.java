@@ -35,8 +35,7 @@ public class CustomerSync {
     }
 
     public boolean syncCompany(ExternalCustomer externalCustomer) {
-        CustomerMatches customerMatches = loadCompany(externalCustomer);
-        Customer customer = customerMatches.getCustomer();
+        Customer customer = loadCompany(externalCustomer);
 
         checkForDuplicates(externalCustomer);
 
@@ -93,7 +92,7 @@ public class CustomerSync {
         this.customerDataAccess.createCustomerRecord(customer);
     }
 
-    public CustomerMatches loadCompany(ExternalCustomer externalCustomer) {
+    public Customer loadCompany(ExternalCustomer externalCustomer) {
         return customerDataAccess.loadCompanyCustomer(externalCustomer.getExternalId(), externalCustomer.getCompanyNumber());
     }
 
