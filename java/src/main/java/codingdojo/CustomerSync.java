@@ -17,13 +17,13 @@ public class CustomerSync {
         this.customerDataAccess = db;
     }
 
-    public boolean syncWithDataLayer(ExternalCustomer externalCustomer) {
+    public boolean syncWithDataLayer(Customer externalCustomer) {
         return externalCustomer.getCustomerType() == CustomerType.COMPANY
                 ? syncCompany(externalCustomer)
                 : syncPerson(externalCustomer);
     }
 
-    public boolean syncPerson(ExternalCustomer externalCustomer) {
+    public boolean syncPerson(Customer externalCustomer) {
         Optional<Customer> loadCustomer = loadPerson(externalCustomer);
         Customer customer = getOrCreate(externalCustomer, loadCustomer);
 
@@ -31,7 +31,7 @@ public class CustomerSync {
         return loadCustomer.isEmpty();
     }
 
-    public boolean syncCompany(ExternalCustomer externalCustomer) {
+    public boolean syncCompany(Customer externalCustomer) {
         handleDuplicates(externalCustomer);
 
         Optional<Customer> loadCustomer = loadCompany(externalCustomer);
@@ -43,7 +43,7 @@ public class CustomerSync {
         return loadCustomer.isEmpty();
     }
 
-    private Customer getOrCreate(ExternalCustomer externalCustomer, Optional<Customer> loadCustomer) {
+    private Customer getOrCreate(Customer externalCustomer, Optional<Customer> loadCustomer) {
         Customer customer;
 
         customer = loadCustomer.isEmpty()
@@ -54,7 +54,7 @@ public class CustomerSync {
         return customer;
     }
 
-    private void handleDuplicates(ExternalCustomer externalCustomer) {
+    private void handleDuplicates(Customer externalCustomer) {
         List<Customer> duplicates = customerDataAccess.checkForDuplicates(externalCustomer.getExternalId(), externalCustomer.getCompanyNumber());
         for (Customer duplicate : duplicates) {
             duplicate.setName(externalCustomer.getName()); // in prepare
@@ -63,7 +63,7 @@ public class CustomerSync {
     }
 
 
-    private Customer create(ExternalCustomer externalCustomer) {
+    private Customer create(Customer externalCustomer) {
         Customer customer = new Customer();
         customer.setExternalId(externalCustomer.getExternalId());
         customer.setMasterExternalId(externalCustomer.getExternalId());
@@ -71,7 +71,7 @@ public class CustomerSync {
         return customer;
     }
 
-    private void prepare(ExternalCustomer externalCustomer, Customer customer) {
+    private void prepare(Customer externalCustomer, Customer customer) {
         customer.setName(externalCustomer.getName());
         customer.setPreferredStore(externalCustomer.getPreferredStore());
         customer.setAddress(externalCustomer.getAddress());
@@ -90,11 +90,11 @@ public class CustomerSync {
         this.customerDataAccess.createCustomerRecord(customer);
     }
 
-    public Optional<Customer> loadCompany(ExternalCustomer externalCustomer) {
+    public Optional<Customer> loadCompany(Customer externalCustomer) {
         return customerDataAccess.loadCompanyCustomer(externalCustomer.getExternalId(), externalCustomer.getCompanyNumber());
     }
 
-    public Optional<Customer> loadPerson(ExternalCustomer externalCustomer) {
+    public Optional<Customer> loadPerson(Customer externalCustomer) {
         return customerDataAccess.loadPersonCustomer(externalCustomer.getExternalId());
     }
 }

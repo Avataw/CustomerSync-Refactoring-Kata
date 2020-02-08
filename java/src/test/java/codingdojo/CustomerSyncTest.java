@@ -18,7 +18,7 @@ public class CustomerSyncTest {
     public void syncCompanyByExternalId(){
         String externalId = "12345";
 
-        ExternalCustomer externalCustomer = createExternalCompany();
+        Customer externalCustomer = createExternalCompany();
         externalCustomer.setExternalId(externalId);
 
         Customer customer = createCustomerWithSameCompanyAs(externalCustomer);
@@ -42,7 +42,7 @@ public class CustomerSyncTest {
     public void syncPrivatePersonByExternalId(){
         String externalId = "12345";
 
-        ExternalCustomer externalCustomer = createExternalPrivatePerson();
+        Customer externalCustomer = createExternalPrivatePerson();
         externalCustomer.setExternalId(externalId);
 
         Customer customer = new Customer();
@@ -67,7 +67,7 @@ public class CustomerSyncTest {
     public void syncShoppingLists(){
         String externalId = "12345";
 
-        ExternalCustomer externalCustomer = createExternalCompany();
+        Customer externalCustomer = createExternalCompany();
         externalCustomer.setExternalId(externalId);
 
         Customer customer = createCustomerWithSameCompanyAs(externalCustomer);
@@ -93,7 +93,7 @@ public class CustomerSyncTest {
     @Test
     public void syncNewCompanyCustomer(){
 
-        ExternalCustomer externalCustomer = createExternalCompany();
+        Customer externalCustomer = createExternalCompany();
         externalCustomer.setExternalId("12345");
 
         FakeDatabase db = new FakeDatabase();
@@ -112,7 +112,7 @@ public class CustomerSyncTest {
     @Test
     public void syncNewPrivateCustomer(){
 
-        ExternalCustomer externalCustomer = createExternalPrivatePerson();
+        Customer externalCustomer = createExternalPrivatePerson();
         externalCustomer.setExternalId("12345");
 
         FakeDatabase db = new FakeDatabase();
@@ -132,7 +132,7 @@ public class CustomerSyncTest {
     public void conflictExceptionWhenExistingCustomerIsPerson() {
         String externalId = "12345";
 
-        ExternalCustomer externalCustomer = createExternalCompany();
+        Customer externalCustomer = createExternalCompany();
         externalCustomer.setExternalId(externalId);
 
         Customer customer = new Customer();
@@ -156,7 +156,7 @@ public class CustomerSyncTest {
     public void syncByExternalIdButCompanyNumbersConflict(){
         String externalId = "12345";
 
-        ExternalCustomer externalCustomer = createExternalCompany();
+        Customer externalCustomer = createExternalCompany();
         externalCustomer.setExternalId(externalId);
 
         Customer customer = createCustomerWithSameCompanyAs(externalCustomer);
@@ -182,7 +182,7 @@ public class CustomerSyncTest {
     public void syncByCompanyNumber(){
         String companyNumber = "12345";
 
-        ExternalCustomer externalCustomer = createExternalCompany();
+        Customer externalCustomer = createExternalCompany();
         externalCustomer.setCompanyNumber(companyNumber);
 
         Customer customer = createCustomerWithSameCompanyAs(externalCustomer);
@@ -207,7 +207,7 @@ public class CustomerSyncTest {
     public void syncByCompanyNumberWithConflictingExternalId(){
         String companyNumber = "12345";
 
-        ExternalCustomer externalCustomer = createExternalCompany();
+        Customer externalCustomer = createExternalCompany();
         externalCustomer.setCompanyNumber(companyNumber);
         externalCustomer.setExternalId("45646");
 
@@ -233,7 +233,7 @@ public class CustomerSyncTest {
     public void conflictExceptionWhenExistingCustomerIsCompany() {
         String externalId = "12345";
 
-        ExternalCustomer externalCustomer = createExternalPrivatePerson();
+        Customer externalCustomer = createExternalPrivatePerson();
         externalCustomer.setExternalId(externalId);
 
         Customer customer = new Customer();
@@ -258,7 +258,7 @@ public class CustomerSyncTest {
     public void syncCompanyByExternalIdWithNonMatchingMasterId(){
         String externalId = "12345";
 
-        ExternalCustomer externalCustomer = createExternalCompany();
+        Customer externalCustomer = createExternalCompany();
         externalCustomer.setExternalId(externalId);
 
         Customer customer = createCustomerWithSameCompanyAs(externalCustomer);
@@ -287,8 +287,8 @@ public class CustomerSyncTest {
     }
 
 
-    private ExternalCustomer createExternalPrivatePerson() {
-        ExternalCustomer externalCustomer = new ExternalCustomer();
+    private Customer createExternalPrivatePerson() {
+        Customer externalCustomer = new Customer();
         externalCustomer.setExternalId("12345");
         externalCustomer.setName("Joe Bloggs");
         externalCustomer.setAddress(new Address("123 main st", "Stockholm", "SE-123 45"));
@@ -298,8 +298,8 @@ public class CustomerSyncTest {
     }
 
 
-    private ExternalCustomer createExternalCompany() {
-        ExternalCustomer externalCustomer = new ExternalCustomer();
+    private Customer createExternalCompany() {
+        Customer externalCustomer = new Customer();
         externalCustomer.setExternalId("12345");
         externalCustomer.setName("Acme Inc.");
         externalCustomer.setAddress(new Address("123 main st", "Helsingborg", "SE-123 45"));
@@ -308,14 +308,14 @@ public class CustomerSyncTest {
         return externalCustomer;
     }
 
-    private Customer createCustomerWithSameCompanyAs(ExternalCustomer externalCustomer) {
+    private Customer createCustomerWithSameCompanyAs(Customer externalCustomer) {
         Customer customer = new Customer();
         customer.setCompanyNumber(externalCustomer.getCompanyNumber());
         customer.setInternalId("45435");
         return customer;
     }
 
-    private StringBuilder printBeforeState(ExternalCustomer externalCustomer, FakeDatabase db) {
+    private StringBuilder printBeforeState(Customer externalCustomer, FakeDatabase db) {
         StringBuilder toAssert = new StringBuilder();
         toAssert.append("BEFORE:\n");
         toAssert.append(db.printContents());

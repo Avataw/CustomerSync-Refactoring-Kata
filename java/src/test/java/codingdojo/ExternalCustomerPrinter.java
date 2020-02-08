@@ -1,10 +1,10 @@
 package codingdojo;
 
-import codingdojo.model.ExternalCustomer;
+import codingdojo.model.Customer;
 
 public class ExternalCustomerPrinter {
 
-    public static String print(ExternalCustomer externalCustomer, String indent) {
+    public static String print(Customer externalCustomer, String indent) {
         StringBuilder sb = new StringBuilder();
         sb.append("ExternalCustomer {");
         sb.append("\n" + indent + "    externalId='" + externalCustomer.getExternalId() + '\'');
